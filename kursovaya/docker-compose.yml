@@ -1,0 +1,27 @@
+services:
+  backend:
+    build: .
+    ports:
+      - "9532:9532"
+    volumes:
+      - ./static:/app/static  # Монтируем локальную директорию в контейнер
+    environment:
+      - DATABASE_URL=postgresql://postgres:0aCX70TYQW3R@postgres:5432/postgres
+    depends_on:
+      - postgres
+
+  postgres:
+    image: postgres:latest  # Используем официальный образ PostgreSQL
+    container_name: postgres_container
+    environment:
+      POSTGRES_USER: postgres      # Имя пользователя
+      POSTGRES_PASSWORD: 0aCX70TYQW3R  # Пароль
+      POSTGRES_DB: postgres     # Имя базы данных
+    ports:
+      - "5431:5432"  # Проброс порта 5432 (PostgreSQL) на хост
+    volumes:
+      - postgres_data:/var/lib/postgresql/data  # Сохраняем данные в volume
+    restart: always  # Автоматически перезапускать контейнер при сбоях
+
+volumes:
+  postgres_data:  # Именованный volume для хранения данных PostgreSQL

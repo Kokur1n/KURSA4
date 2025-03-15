@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="ru">
+<link rel="stylesheet" href="/static/index.css">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Управление Учителями и Экзаменами</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+      background-color: #fafafa;
+    }
+    h1, h2, h3 {
+      color: #333;
+    }
+    .section {
+      margin-bottom: 40px;
+      padding: 15px;
+      border: 1px solid #ccc;
+      background-color: #fff;
+    }
+    form {
+      margin-bottom: 20px;
+    }
+    input, button {
+      padding: 5px;
+      margin: 5px;
+      font-size: 14px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+    }
+    th, td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: left;
+    }
+    th {
+      background-color: #f2f2f2;
+    }
+    .output {
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Управление Учителями и Экзаменами</h1>
+
+  <!-- Секция для работы с Учителями -->
+  <div class="section" id="teachers-section">
+    <h2>Учителя</h2>
+    <button onclick="getTeachers()">Получить всех учителей</button>
+    <div id="teachers-output" class="output"></div>
+
+    <h3>Создать учителя</h3>
+    <form id="create-teacher-form">
+      <!-- Фамилия: только кириллица и дефисы -->
+      <input type="text" id="teacher-last-name" placeholder="Фамилия"
+             pattern="^[А-ЯЁа-яё-]+$"
+             title="Фамилия может содержать только кириллические буквы и дефисы"
+             required>
+      <!-- Должность: кириллица, пробелы и дефисы -->
+      <input type="text" id="teacher-position" placeholder="Должность"
+             pattern="^[А-ЯЁа-яё\s-]+$"
+             title="Должность может содержать только кириллические буквы, пробелы и дефисы"
+             required>
+      <!-- Предмет: кириллица, пробелы и дефисы -->
+      <input type="text" id="teacher-subject" placeholder="Предмет"
+             pattern="^[А-ЯЁа-яё\s-]+$"
+             title="Предмет может содержать только кириллические буквы, пробелы и дефисы"
+             required>
+      <button type="submit">Создать</button>
+    </form>
+
+    <h3>Обновить учителя</h3>
+    <form id="update-teacher-form">
+      <input type="number" id="update-teacher-id" placeholder="ID учителя" required>
+      <input type="text" id="update-teacher-last-name" placeholder="Фамилия"
+             pattern="^[А-ЯЁа-яё-]+$"
+             title="Фамилия может содержать только кириллические буквы и дефисы"
+             required>
+      <input type="text" id="update-teacher-position" placeholder="Должность"
+             pattern="^[А-ЯЁа-яё\s-]+$"
+             title="Должность может содержать только кириллические буквы, пробелы и дефисы"
+             required>
+      <input type="text" id="update-teacher-subject" placeholder="Предмет"
+             pattern="^[А-ЯЁа-яё\s-]+$"
+             title="Предмет может содержать только кириллические буквы, пробелы и дефисы"
+             required>
+      <button type="submit">Обновить</button>
+    </form>
+
+    <h3>Удалить учителя</h3>
+    <form id="delete-teacher-form">
+      <input type="number" id="delete-teacher-id" placeholder="ID учителя" required>
+      <button type="submit">Удалить</button>
+    </form>
+
+    <h3>Получить учителя по ID</h3>
+    <form id="get-teacher-form">
+      <input type="number" id="get-teacher-id" placeholder="ID учителя" required>
+      <button type="submit">Получить</button>
+    </form>
+    <div id="single-teacher-output" class="output"></div>
+
+    <h3>Получить экзамены учителя</h3>
+    <form id="get-teacher-exams-form">
+      <input type="number" id="teacher-exams-id" placeholder="ID учителя" required>
+      <button type="submit">Получить экзамены</button>
+    </form>
+    <div id="teacher-exams-output" class="output"></div>
+
+    <h3>Поиск учителей</h3>
+    <form id="search-teacher-form">
+      <input type="text" id="teacher-search-query" placeholder="Введите фамилию для поиска" required>
+      <button type="submit">Поиск</button>
+    </form>
+    <div id="teacher-search-output" class="output"></div>
+  </div>
+
+  <!-- Секция для работы с Экзаменами -->
+  <div class="section" id="exams-section">
+    <h2>Экзамены</h2>
+    <button onclick="getExams()">Получить все экзамены</button>
+    <div id="exams-output" class="output"></div>
+
+    <h3>Создать экзамен</h3>
+    <form id="create-exam-form">
+      <!-- Предмет: только кириллица, пробелы и дефисы -->
+      <input type="text" id="exam-subject" placeholder="Предмет"
+             pattern="^[А-ЯЁа-яё\s-]+$"
+             title="Предмет может содержать только кириллические буквы, пробелы и дефисы"
+             required>
+      <!-- Номер группы: цифры, кириллица и дефисы -->
+      <input type="text" id="exam-group-number" placeholder="Номер группы"
+             pattern="^[0-9А-ЯЁа-яё-]+$"
+             title="Номер группы может содержать только цифры, кириллические буквы и дефисы"
+             required>
+      <input type="date" id="exam-date" placeholder="Дата экзамена" required>
+      <input type="number" id="exam-teacher-id" placeholder="ID учителя" required>
+      <button type="submit">Создать экзамен</button>
+    </form>
+
+    <h3>Обновить экзамен</h3>
+    <form id="update-exam-form">
+      <input type="number" id="update-exam-id" placeholder="ID экзамена" required>
+      <input type="text" id="update-exam-subject" placeholder="Предмет"
+             pattern="^[А-ЯЁа-яё\s-]+$"
+             title="Предмет может содержать только кириллические буквы, пробелы и дефисы"
+             required>
+      <input type="text" id="update-exam-group-number" placeholder="Номер группы"
+             pattern="^[0-9А-ЯЁа-яё-]+$"
+             title="Номер группы может содержать только цифры, кириллические буквы и дефисы"
+             required>
+      <input type="date" id="update-exam-date" placeholder="Дата экзамена" required>
+      <input type="number" id="update-exam-teacher-id" placeholder="ID учителя" required>
+      <button type="submit">Обновить экзамен</button>
+    </form>
+
+    <h3>Удалить экзамен</h3>
+    <form id="delete-exam-form">
+      <input type="number" id="delete-exam-id" placeholder="ID экзамена" required>
+      <button type="submit">Удалить экзамен</button>
+    </form>
+
+    <h3>Получить экзамен по ID</h3>
+    <form id="get-exam-form">
+      <input type="number" id="get-exam-id" placeholder="ID экзамена" required>
+      <button type="submit">Получить экзамен</button>
+    </form>
+    <div id="single-exam-output" class="output"></div>
+
+    <h3>Поиск экзаменов</h3>
+    <form id="search-exam-form">
+      <input type="text" id="exam-search-query" placeholder="Введите предмет для поиска" required>
+      <button type="submit">Поиск</button>
+    </form>
+    <div id="exam-search-output" class="output"></div>
+  </div>
+
+  <script>
+    // Базовый URL API (если HTML расположен на том же сервере, оставляем пустым)
+    const apiBaseUrl = "";
+
+    // Функция для генерации HTML-таблицы из массива объектов
+    function buildTable(data) {
+      if (!Array.isArray(data)) {
+        data = [data];
+      }
+      if (data.length === 0) {
+        return "<p>Нет данных для отображения.</p>";
+      }
+      const keys = Object.keys(data[0]);
+      let table = "<table>";
+      table += "<thead><tr>";
+      keys.forEach(key => {
+        table += `<th>${key}</th>`;
+      });
+      table += "</tr></thead><tbody>";
+      data.forEach(item => {
+        table += "<tr>";
+        keys.forEach(key => {
+          table += `<td>${item[key] !== null && item[key] !== undefined ? item[key] : ""}</td>`;
+        });
+        table += "</tr>";
+      });
+      table += "</tbody></table>";
+      return table;
+    }
+
+    // Дополнительные функции валидации
+    function validateTeacherLastName(lastName) {
+      return /^[А-ЯЁа-яё-]+$/.test(lastName);
+    }
+
+    function validateTeacherPosition(position) {
+      return /^[А-ЯЁа-яё\s-]+$/.test(position);
+    }
+
+    function validateTeacherSubject(subject) {
+      return /^[А-ЯЁа-яё\s-]+$/.test(subject);
+    }
+
+    function validateExamSubject(subject) {
+      return /^[А-ЯЁа-яё\s-]+$/.test(subject);
+    }
+
+    function validateExamGroupNumber(group) {
+      return /^[0-9А-ЯЁа-яё-]+$/.test(group);
+    }
+
+    // Функции для работы с API Учителей
+
+    async function getTeachers() {
+      const response = await fetch(apiBaseUrl + '/teachers/');
+      const data = await response.json();
+      document.getElementById('teachers-output').innerHTML = buildTable(data);
+    }
+
+    document.getElementById('create-teacher-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const lastName = document.getElementById('teacher-last-name').value.trim();
+      const position = document.getElementById('teacher-position').value.trim();
+      const subject = document.getElementById('teacher-subject').value.trim();
+
+      // Валидация
+      if (!validateTeacherLastName(lastName)) {
+        alert('Фамилия может содержать только кириллические буквы и дефисы');
+        return;
+      }
+      if (!validateTeacherPosition(position)) {
+        alert('Должность может содержать только кириллические буквы, пробелы и дефисы');
+        return;
+      }
+      if (!validateTeacherSubject(subject)) {
+        alert('Предмет может содержать только кириллические буквы, пробелы и дефисы');
+        return;
+      }
+
+      await fetch(apiBaseUrl + '/teachers/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ last_name: lastName, position, subject })
+      });
+      alert('Учитель создан');
+      getTeachers();
+    });
+
+    document.getElementById('update-teacher-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const teacherId = document.getElementById('update-teacher-id').value;
+      const lastName = document.getElementById('update-teacher-last-name').value.trim();
+      const position = document.getElementById('update-teacher-position').value.trim();
+      const subject = document.getElementById('update-teacher-subject').value.trim();
+
+      // Валидация
+      if (!validateTeacherLastName(lastName)) {
+        alert('Фамилия может содержать только кириллические буквы и дефисы');
+        return;
+      }
+      if (!validateTeacherPosition(position)) {
+        alert('Должность может содержать только кириллические буквы, пробелы и дефисы');
+        return;
+      }
+      if (!validateTeacherSubject(subject)) {
+        alert('Предмет может содержать только кириллические буквы, пробелы и дефисы');
+        return;
+      }
+
+      const response = await fetch(apiBaseUrl + '/teachers/' + teacherId, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ last_name: lastName, position, subject })
+      });
+      if (response.ok) {
+        alert('Учитель обновлён');
+        getTeachers();
+      } else {
+        alert('Ошибка обновления учителя');
+      }
+    });
+
+    document.getElementById('delete-teacher-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const teacherId = document.getElementById('delete-teacher-id').value;
+      const response = await fetch(apiBaseUrl + '/teachers/' + teacherId, {
+        method: 'DELETE'
+      });
+      if (response.ok) {
+        alert('Учитель удалён');
+        getTeachers();
+      } else {
+        alert('Ошибка удаления учителя');
+      }
+    });
+
+    document.getElementById('get-teacher-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const teacherId = document.getElementById('get-teacher-id').value;
+      const response = await fetch(apiBaseUrl + '/teachers/' + teacherId);
+      if (response.ok) {
+        const data = await response.json();
+        document.getElementById('single-teacher-output').innerHTML = buildTable(data);
+      } else {
+        document.getElementById('single-teacher-output').innerHTML = "<p>Учитель не найден</p>";
+      }
+    });
+
+    document.getElementById('get-teacher-exams-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const teacherId = document.getElementById('teacher-exams-id').value;
+      const response = await fetch(apiBaseUrl + '/teachers/' + teacherId + '/exams/');
+      if (response.ok) {
+        const data = await response.json();
+        let html = "<h4>Информация об учителе</h4>" + buildTable(data.teacher);
+        html += "<h4>Список экзаменов</h4>" + buildTable(data.exams);
+        document.getElementById('teacher-exams-output').innerHTML = html;
+      } else {
+        document.getElementById('teacher-exams-output').innerHTML = "<p>Данные не найдены</p>";
+      }
+    });
+
+    document.getElementById('search-teacher-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const query = document.getElementById('teacher-search-query').value;
+      const response = await fetch(apiBaseUrl + '/teachers/search/?q=' + encodeURIComponent(query));
+      if (response.ok) {
+        const data = await response.json();
+        document.getElementById('teacher-search-output').innerHTML = buildTable(data);
+      } else {
+        document.getElementById('teacher-search-output').innerHTML = "<p>Учителя не найдены</p>";
+      }
+    });
+
+    // Функции для работы с API Экзаменов
+
+    async function getExams() {
+      const response = await fetch(apiBaseUrl + '/exams/');
+      const data = await response.json();
+      document.getElementById('exams-output').innerHTML = buildTable(data);
+    }
+
+    document.getElementById('create-exam-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const subject = document.getElementById('exam-subject').value.trim();
+      const groupNumber = document.getElementById('exam-group-number').value.trim();
+      const examDate = document.getElementById('exam-date').value;
+      const teacherId = document.getElementById('exam-teacher-id').value;
+
+      // Валидация
+      if (!validateExamSubject(subject)) {
+        alert('Предмет может содержать только кириллические буквы, пробелы и дефисы');
+        return;
+      }
+      if (!validateExamGroupNumber(groupNumber)) {
+        alert('Номер группы может содержать только цифры, кириллические буквы и дефисы');
+        return;
+      }
+
+      await fetch(apiBaseUrl + '/exams/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ subject, group_number: groupNumber, exam_date: examDate, teacher_id: teacherId })
+      });
+      alert('Экзамен создан');
+      getExams();
+    });
+
+    document.getElementById('update-exam-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const examId = document.getElementById('update-exam-id').value;
+      const subject = document.getElementById('update-exam-subject').value.trim();
+      const groupNumber = document.getElementById('update-exam-group-number').value.trim();
+      const examDate = document.getElementById('update-exam-date').value;
+      const teacherId = document.getElementById('update-exam-teacher-id').value;
+
+      // Валидация
+      if (!validateExamSubject(subject)) {
+        alert('Предмет может содержать только кириллические буквы, пробелы и дефисы');
+        return;
+      }
+      if (!validateExamGroupNumber(groupNumber)) {
+        alert('Номер группы может содержать только цифры, кириллические буквы и дефисы');
+        return;
+      }
+
+      const response = await fetch(apiBaseUrl + '/exams/' + examId, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ subject, group_number: groupNumber, exam_date: examDate, teacher_id: teacherId })
+      });
+      if (response.ok) {
+        alert('Экзамен обновлён');
+        getExams();
+      } else {
+        alert('Ошибка обновления экзамена');
+      }
+    });
+
+    document.getElementById('delete-exam-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const examId = document.getElementById('delete-exam-id').value;
+      const response = await fetch(apiBaseUrl + '/exams/' + examId, {
+        method: 'DELETE'
+      });
+      if (response.ok) {
+        alert('Экзамен удалён');
+        getExams();
+      } else {
+        alert('Ошибка удаления экзамена');
+      }
+    });
+
+    document.getElementById('get-exam-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const examId = document.getElementById('get-exam-id').value;
+      const response = await fetch(apiBaseUrl + '/exams/' + examId);
+      if (response.ok) {
+        const data = await response.json();
+        document.getElementById('single-exam-output').innerHTML = buildTable(data);
+      } else {
+        document.getElementById('single-exam-output').innerHTML = "<p>Экзамен не найден</p>";
+      }
+    });
+
+    document.getElementById('search-exam-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const query = document.getElementById('exam-search-query').value;
+      const response = await fetch(apiBaseUrl + '/exams/search/?q=' + encodeURIComponent(query));
+      if (response.ok) {
+        const data = await response.json();
+        document.getElementById('exam-search-output').innerHTML = buildTable(data);
+      } else {
+        document.getElementById('exam-search-output').innerHTML = "<p>Экзамены не найдены</p>";
+      }
+    });
+  </script>
+</body>
+</html>
